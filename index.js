@@ -48,21 +48,26 @@ io.on("connection", function (socket) {
 
     socket.join(streamid);
     io.to(streamid).emit('viewer count', numberOfViewers(streamid));
-    console.log(`CONNECT: Viewer connected to stream ${streamid}`);
+    console.log(`CONNECT: Viewer connected to stream ${streamid}. #Viewers: ${numberOfViewers(streamid)}`);
 
     socket.on('signed in', function(user_info) {
-        userid = user_info.user_id;
+        userid = user_info.userid;
         username = user_info.username;
+        socket.emit('signed in');
+        console.log(`SIGNIN: ${userid}:${username} signed into stream ${streamid}`);
     });
 
     socket.on('signed out', function() {
         userid = undefined;
         username = undefined;
+        socket.emit('signed out');
+        console.log(`SIGNOUT: A user signed out of stream ${streamid}`);
     })
 
     socket.on('new message', function(msg) {
         if (msg === '' || !userid || !username) return;
 
+        // Uncomment this when we want to implement commands
         // let first_char = msg.charAt(0);
 
         // if (first_char === '/') {
@@ -71,13 +76,12 @@ io.on("connection", function (socket) {
 
         let message = createMessage(streamid, userid, username, msg);
         io.to(streamid).emit('new message', message);
-
         console.log(`MESSAGE: ${message.timestamp}: ${message.streamid}: ${message.username}: ${message.text}`);
     });
 
     socket.on('disconnect', function() {
-        console.log(`DISCONNECT: Viewer disconnected from stream ${streamid}`);
         io.to(streamid).emit('viewer count', numberOfViewers(streamid));
+        console.log(`DISCONNECT: Viewer disconnected from stream ${streamid}. #Viewers: ${numberOfViewers(streamid)}`);
     });
 });
 
