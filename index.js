@@ -76,6 +76,7 @@ io.on("connection", function (socket) {
 
         let message = createMessage(streamid, userid, username, msg);
         io.to(streamid).emit('new message', message);
+        socket.emit('message received');
         console.log(`MESSAGE: ${message.timestamp}: ${message.streamid}: ${message.username}: ${message.text}`);
     });
 
