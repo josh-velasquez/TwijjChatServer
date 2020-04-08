@@ -3,6 +3,7 @@
  */
 const http = require('http').createServer();
 const io = require('socket.io')(http);
+const uuidv4 = require('uuid').v4;
 
 /**
  * Creates a message object for the user and text specified.
@@ -11,12 +12,20 @@ const io = require('socket.io')(http);
  * @param {string} userid   The id of the user that created the message
  * @param {string} username The username of the user
  * @param {string} msg      The message text
- * @returns {{text: string, timestamp: Date, user_id: string, username: string}} A message object
+ * @returns {{
+ *  messageid: string,
+ *  streamid: string,
+ *  text: string,
+ *  timestamp: Date,
+ *  userid: string,
+ *  username: string
+ * }} A message object
  */
 function createMessage(streamid, userid, username, msg) {
     const date = new Date();
 
     const message = {
+        messageid: uuidv4(),
         streamid: streamid,
         text: msg,
         timestamp: date,
